@@ -3,15 +3,6 @@
 import os
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-import PIL.Image as Image
-from sklearn.preprocessing import normalize
-
-DATASET = r"D:\Project\DATA\kitti\02"
-DATASET_LEFT = DATASET+"/image_2/"
-DATASET_RIGHT = DATASET+"/image_3/"
-DATASET_DISPARITIES = DATASET+"/disparities/"
-DATASET_COMBINED = DATASET+"/combined/"
 
 def SGBM(left, right):
 	kernel_size = 3
@@ -42,21 +33,6 @@ def SGBM(left, right):
 	wls_image = wls_filter.filter(disparity_left, smooth_left, None, disparity_right)
 	wls_image = cv2.normalize(src=wls_image, dst=wls_image, beta=0, alpha=255, norm_type=cv2.NORM_MINMAX)
 	wls_image = np.uint8(wls_image)
-	cv2.imshow("wls", wls_image)
-	cv2.waitKey(1)
+	return wls_image
 
-def process_dataset():
-	left_images = [f for f in os.listdir(DATASET_LEFT) if not f.startswith('.')]
-	right_images = [f for f in os.listdir(DATASET_RIGHT) if not f.startswith('.')]
-	assert(len(left_images) == len(right_images))
-	left_images.sort()
-	right_images.sort()
-	for i in range(len(left_images)):
-		left_image_path = DATASET_LEFT+left_images[i]
-		right_image_path = DATASET_RIGHT+right_images[i]
-		left_image = cv2.imread(left_image_path, cv2.IMREAD_COLOR)
-		right_image = cv2.imread(right_image_path, cv2.IMREAD_COLOR)
-		SGBM(left_image, right_image)
 
-if __name__== "__main__":
-	process_dataset()
