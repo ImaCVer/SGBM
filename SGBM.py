@@ -7,14 +7,13 @@ import matplotlib.pyplot as plt
 import PIL.Image as Image
 from sklearn.preprocessing import normalize
 
-DPI=96
 DATASET = r"D:\Project\DATA\kitti\02"
 DATASET_LEFT = DATASET+"/image_2/"
 DATASET_RIGHT = DATASET+"/image_3/"
 DATASET_DISPARITIES = DATASET+"/disparities/"
 DATASET_COMBINED = DATASET+"/combined/"
 
-def process_frame(left, right, name):
+def SGBM(left, right):
 	kernel_size = 3
 	smooth_left = cv2.GaussianBlur(left, (kernel_size,kernel_size), 1.5)
 	smooth_right = cv2.GaussianBlur(right, (kernel_size, kernel_size), 1.5)
@@ -46,14 +45,10 @@ def process_frame(left, right, name):
 	cv2.imshow("wls", wls_image)
 	cv2.waitKey(1)
 
-def create_combined_output(left, right, name):
-	combined = np.concatenate((left, right, cv2.imread(DATASET_DISPARITIES+name)), axis=0)
-	cv2.imwrite(DATASET_COMBINED+name, combined)
-
 def process_dataset():
 	left_images = [f for f in os.listdir(DATASET_LEFT) if not f.startswith('.')]
 	right_images = [f for f in os.listdir(DATASET_RIGHT) if not f.startswith('.')]
-	assert(len(left_images)==len(right_images))
+	assert(len(left_images) == len(right_images))
 	left_images.sort()
 	right_images.sort()
 	for i in range(len(left_images)):
@@ -61,7 +56,7 @@ def process_dataset():
 		right_image_path = DATASET_RIGHT+right_images[i]
 		left_image = cv2.imread(left_image_path, cv2.IMREAD_COLOR)
 		right_image = cv2.imread(right_image_path, cv2.IMREAD_COLOR)
-		process_frame(left_image, right_image, left_images[i])
+		SGBM(left_image, right_image)
 
 if __name__== "__main__":
 	process_dataset()
